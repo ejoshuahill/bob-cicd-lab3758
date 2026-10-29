@@ -93,41 +93,6 @@ spec:
             }
         }
 
-        // ── Lab 1: PR / Git Diff Review ──────────────────────────
-        stage('PR Review') {
-            options {
-                timeout(time: 5, unit: 'MINUTES')
-            }
-            steps {
-                script {
-                    echo '════════════════════════════════════════════════════════'
-                    echo '  Bob — PR Review'
-                    echo '════════════════════════════════════════════════════════'
-
-                    catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
-                        sh '''
-                            git config --global --add safe.directory "$WORKSPACE"
-                            git diff origin/main...HEAD > git-diff.txt || : > git-diff.txt
-                        '''
-
-                        def analysis = askBob(
-                            'Read git-diff.txt and produce a senior-developer PR overview.',
-                            'pipeline-git-diff-overview'
-                        )
-
-                        echo analysis
-                        writeFile file: 'bob-pr-review.md', text: analysis
-                    }
-
-                    echo '════════════════════════════════════════════════════════'
-                }
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: 'bob-pr-review.md', allowEmptyArchive: true
-                }
-            }
-        }
 
         // ── Lab 2: Unit Testing ──────────────────────────────────
         //    Add a mvn test stage + Bob test-failure analysis.

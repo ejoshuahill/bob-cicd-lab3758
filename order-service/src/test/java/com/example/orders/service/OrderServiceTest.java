@@ -105,6 +105,15 @@ class OrderServiceTest {
     }
 
     @Test
+    void updateOrderStatus_nonExistentId_throwsException() {
+        when(orderRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> orderService.updateOrderStatus(99L, "CONFIRMED"))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Order not found: 99");
+    }
+
+    @Test
     void updateOrderStatus_fromTerminalStatus_throwsException() {
         testOrder.setStatus("DELIVERED");
         when(orderRepository.findById(1L)).thenReturn(Optional.of(testOrder));
